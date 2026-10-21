@@ -4,7 +4,7 @@ Praktická zkouška v izolované KVM virtuálce: **65 minut, 26 automatických k
 
 ## Instalace na server
 
-Na serveru musí být Linux se systemd, architektura x86_64 a dostupné KVM. Pokud chybí `git`, nejprve jej nainstaluj balíčkovým správcem serveru.
+Na serveru musí být Linux se systemd, architektura x86_64 a dostupné KVM. Doporučeno je alespoň **4 GiB RAM a 25 GiB volného místa**. Pokud chybí `git`, nejprve jej nainstaluj balíčkovým správcem serveru.
 
 ```bash
 git clone https://github.com/bartaceqq/LInuxTest.git

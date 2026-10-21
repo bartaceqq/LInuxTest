@@ -25,6 +25,23 @@ def wait_task(key,points,total):
             check(f'B: úkol {key}: +{points}, celkem {total}/34',s['completed'][key]['points']==points and s['score']==total);return
         time.sleep(.4)
     raise AssertionError(f'Úkol {key} nebyl automaticky uznán: {state()}')
+def wait_until(predicate,description,console=None,timeout=30):
+    end=time.monotonic()+timeout
+    last=None
+    while time.monotonic()<end:
+        try:
+            result=predicate()
+            if result:return result
+        except (AssertionError,RuntimeError) as error:last=error
+        if console:console.collect(.1)
+        else:time.sleep(.15)
+    raise AssertionError('Čekání selhalo: '+description+'; '+str(last))
+
+def shell_ready(console):
+    console.send('\x02');time.sleep(.06);console.send('1')
+    wait_until(lambda:cmd('runuser -u student -- tmux display-message -p -t praktikum "#{@linux_exam_role}"').strip()=='shell',
+               'aktivní skutečný shell po Ctrl+b, 1',console)
+
 class Console:
     def __init__(self):
         assert guest.VM=='linux-essentials-exam-qa','Konzole testu smí mířit pouze na QA.'
@@ -105,14 +122,18 @@ try:
     before_text=cmd('runuser -u student -- bash -c "cd /tmp; command -v starttest; statstest"')
     check('Nové příkazy: dostupné z libovolného adresáře, žluté skóre a bez spuštění časovače','/usr/local/bin/starttest' in before_text and '\033[33mSKÓRE 0/34' in before_text and state()==before_status)
     c.send('stty rows 24 cols 80; starttest\r');text=c.collect(5)
+    wait_until(lambda:state()['status']=='running','zahájení časovače',c)
+    wait_until(lambda:cmd('runuser -u student -- tmux display-message -p -t praktikum "#{@linux_exam_role}"').strip()=='assignment','úplné první zadání',c)
+    text=c.collect(.2)
     (REPORTS/'console-start.txt').write_text(text)
     s=state();check('Časovač: přesně 3900 sekund od prvního spuštění',s['deadline']-s['start']==3900 and s['score']==0)
     original_start=s['start'];original_deadline=s['deadline']
     check('Rozhraní: pět oken tmux',len(cmd('runuser -u student -- tmux list-windows -t praktikum').splitlines())==5)
     check('Rozhraní: automaticky zobrazené úplné zadání','ZADÁNÍ' in text or 'PRAKTIKUM' in text)
-    c.send('\x021');c.collect(1)
+    shell_ready(c)
     c.send('sudo -n id -u > /tmp/exam-console-probe\r');c.collect(1)
-    check('Konzole: skutečný interaktivní Bash a funkční sudo',cmd('cat /tmp/exam-console-probe').strip()=='0')
+    wait_until(lambda:cmd('cat /tmp/exam-console-probe',allowed=(0,1)).strip()=='0','Bash a sudo vykonaly skutečný příkaz',c)
+    check('Konzole: skutečný interaktivní Bash a funkční sudo')
     # Nesprávné výsledky musejí zůstat bez bodů.
     cmd('''useradd -M -d /home/aneta -s /bin/bash aneta
 printf 'aneta:nespravneheslo\n' | chpasswd
@@ -196,6 +217,7 @@ cp /run/exam-original-hosts /etc/hosts
     c.close();reset();initial();check('D: reset obnovil všechny tři disky a výchozí podmínky')
     # Nový pokus a řízené zrychlení času pouze pro test expirace.
     c=Console();c.collect(2);c.send('\r');c.collect(1);c.send('~/test.sh\r');c.collect(3)
+    wait_until(lambda:state()['status']=='running','nový časovač po resetu',c)
     s=state();check('D: nový pokus opět dostal přesně 65 minut',s['deadline']-s['start']==3900 and s['start']!=original_start)
     cmd('''python3 - <<'TEST'
 import sys,time

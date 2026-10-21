@@ -33,5 +33,7 @@ jobs:
         run: python tests/validators-regression.py
       - name: Regrese obecného auditu hostitele bez zásahů do hosta
         run: python tests/audit_test.py
+      - name: Obnovitelné a rychlé přepínání rozhraní
+        run: python tests/navigation_test.py
       - name: Předběžná kontrola a balení instalátoru
         run: python tests/installer_test.py

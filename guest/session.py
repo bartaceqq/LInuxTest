@@ -6,7 +6,7 @@ SESSION='praktikum';ROOT='/opt/linux-exam';VERSION='4'
 ROLES={'shell':(1,'Terminál'),'tasks':(2,'Úkoly'),'assignment':(3,'Zadání'),'help':(4,'Pomoc'),'result':(5,'Výsledek')}
 
 def tm(*args,check=True):
-    p=subprocess.run(['tmux',*args],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+    p=subprocess.run(['tmux',*args],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
     if check and p.returncode:raise RuntimeError(p.stderr.strip())
     return p.stdout.strip()
 def panes(window):
@@ -92,19 +92,62 @@ def configure():
     tm('set-option','-s','escape-time','100')
 
 def ensure():
-    if subprocess.run(['tmux','has-session','-t',SESSION],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
+    if subprocess.run(['tmux','has-session','-t',SESSION],stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
         tm('-f',ROOT+'/tmux.conf','new-session','-d','-s',SESSION,'-n','Terminál','-c','/home/student','bash '+ROOT+'/shell.sh')
         indices=tm('list-windows','-t',SESSION,'-F','#{window_index}').splitlines()
         if indices==['0']:tm('move-window','-s',SESSION+':0','-t',SESSION+':1')
+    tm('set-option','-u','-t',SESSION,'@linux_exam_fast_navigation',check=False)
     configure();shell=ensure_shell()
     for role in ('tasks','assignment','help','result'):ensure_view(role)
+    tm('set-option','-t',SESSION,'@linux_exam_fast_navigation',VERSION)
     return shell
+
+def ready_shell():
+    """Jediným čtením ověří celé připravené UI; jiné uživatelské okno zachová.
+
+    Kontrolujeme původní příkaz panelu, nikoli právě běžící nano/su/make.
+    Flag vzniká až po úspěšném úplném ensure, takže nová/částečná UI jdou
+    nejdřív přes opravu. Žádný stav zkoušky se zde nečte ani nemění.
+    """
+    fields='#{window_index}\t#{pane_id}\t#{@linux_exam_role}\t#{pane_dead}\t#{pane_start_command}\t#{@linux_exam_ui_version}\t#{@linux_exam_fast_navigation}'
+    text=tm('list-panes','-s','-t',SESSION,'-F',fields,check=False)
+    expected={
+        'shell':(1,('bash '+ROOT+'/shell.sh','/bin/bash')),
+        'progress':(1,('statstest --watch',)),
+        **{role:(index,('python3 '+ROOT+'/view.py '+role,)) for role,(index,_) in ROLES.items() if role!='shell'},
+    }
+    found={}
+    for line in text.splitlines():
+        row=line.split('\t')
+        if len(row)!=7:return None
+        index,pane,role,dead,start,version,flag=row
+        try:index=int(index)
+        except ValueError:return None
+        if index>=6:continue
+        if role not in expected or role in found:return None
+        expected_index,commands=expected[role]
+        try:start=' '.join(shlex.split(start))
+        except ValueError:return None
+        if index!=expected_index or dead!='0' or version!=VERSION or flag!=VERSION or start not in commands:return None
+        if not pane.startswith('%') or not pane[1:].isdigit() or pane in found.values():return None
+        found[role]=pane
+    return found.get('shell') if set(found)==set(expected) else None
+
+def select_role(role,shell):
+    tm('select-window','-t',f'{SESSION}:{ROLES[role][0]}')
+    if role=='shell':tm('select-pane','-t',shell)
+    tm('refresh-client',check=False)
 
 def main():
     p=argparse.ArgumentParser(description='Obnovení a přepínání rozhraní zkoušky.')
     p.add_argument('command',choices=['ensure','repair','go']);p.add_argument('role',nargs='?',choices=ROLES,default='shell');a=p.parse_args()
     with open(Path.home()/'.linux-exam-ui.lock','a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
+        if a.command=='go':
+            shell=ready_shell()
+            if shell:
+                select_role(a.role,shell)
+                return
         before=tm('display-message','-p','-t',SESSION,'#{pane_id}',check=False)
         before_window=tm('display-message','-p','-t',SESSION,'#{window_id}',check=False)
         had_shell=any(row[1]=='shell' and row[2]=='0' for row in panes(SESSION+':1'))
@@ -113,10 +156,7 @@ def main():
             target=before if had_shell and before and tm('display-message','-p','-t',before,'#{pane_dead}',check=False)=='0' else shell
             tm('select-window','-t',before_window if target==before and before_window else SESSION+':1',check=False)
             tm('select-pane','-t',target,check=False)
-        if a.command!='repair':
-            tm('select-window','-t',f'{SESSION}:{ROLES[a.role][0]}')
-            if a.role=='shell':tm('select-pane','-t',shell)
-            tm('refresh-client',check=False)
+        if a.command!='repair':select_role(a.role,shell)
 if __name__=='__main__':
     try:main()
     except (RuntimeError,subprocess.SubprocessError) as e:raise SystemExit('Rozhraní se nepodařilo obnovit: '+str(e))
