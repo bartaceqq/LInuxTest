@@ -8,6 +8,7 @@ V pracovní kopii s Pythonem 3.10–3.12 spusť:
 python3 -m compileall -q guest host tests
 python3 tests/validators-regression.py
 python3 tests/audit_test.py
+python3 tests/navigation_test.py
 python3 tests/installer_test.py
 ```
 
@@ -27,15 +28,15 @@ Testy, které mění Linuxový stav, přijímají pouze `LINUX_EXAM_INSTANCE=qa`
 
 ```bash
 cd /opt/linux-exam-simulator
-LINUX_EXAM_INSTANCE=qa python3 tests/ui_regression.py
+sudo env LINUX_EXAM_INSTANCE=qa python3 tests/ui_regression.py
 LINUX_EXAM_INSTANCE=qa linux-exam reset
-LINUX_EXAM_INSTANCE=qa python3 tests/integration.py
+sudo env LINUX_EXAM_INSTANCE=qa python3 tests/integration.py
 sudo env LINUX_EXAM_INSTANCE=qa python3 tests/disks.py
 ```
 
 QA reset potvrď `RESET`. `ui_regression.py` vyžaduje čistý či běžící neřešený pokus; kontroluje skutečné klávesy, návraty z přehledů, obnovu shellu, odpojení, opětovné připojení a zachování časových značek. Úplný `integration.py` vyžaduje čistý QA, provede všech 26 skutečných úloh a ověří 34 bodů, chybná řešení, duplicity, reconnect, expiraci i reset. Pro test expirace změní pouze termín QA pokusu. Na konci obnoví čisté QA. `disks.py` kontroluje odstranění zápisů z obou pomocných disků a neměnnost baseline.
 
-QA vyžaduje další úložiště a při běhu další RAM. Výsledky vznikají pouze lokálně v `reports/qa/`; repozitář je neobsahuje. Podrobnosti jednotlivých skriptů jsou v [tests/README.cs.md](../tests/README.cs.md).
+QA vyžaduje další úložiště a při běhu další RAM. Na menším hostiteli nejprve bezpečně zastav hlavní VM příkazem `linux-exam stop`; pokus se zachová, ale jeho čas se nezastaví. Po testu jej znovu spustíš `linux-exam con`. Příkazy Python testů používají sudo, aby fungovaly i bez členství ve skupině libvirt. Výsledky vznikají pouze lokálně v `reports/qa/`; repozitář je neobsahuje. Podrobnosti jednotlivých skriptů jsou v [tests/README.cs.md](../tests/README.cs.md).
 
 ## Audit hostitele
 

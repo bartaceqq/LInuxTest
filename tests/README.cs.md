@@ -5,9 +5,9 @@
 Testy, které mění prostředí, vyžadují výslovně `LINUX_EXAM_INSTANCE=qa` a odmítnou hlavní VM. Nejdřív vytvoř QA příkazem `sudo python3 /opt/linux-exam-simulator/host/qa.py`. Příkazy spouštěj z adresáře projektu:
 
 ```bash
-LINUX_EXAM_INSTANCE=qa python3 tests/ui_regression.py
+sudo env LINUX_EXAM_INSTANCE=qa python3 tests/ui_regression.py
 LINUX_EXAM_INSTANCE=qa linux-exam reset
-LINUX_EXAM_INSTANCE=qa python3 tests/integration.py
+sudo env LINUX_EXAM_INSTANCE=qa python3 tests/integration.py
 sudo env LINUX_EXAM_INSTANCE=qa python3 tests/disks.py
 ```
 

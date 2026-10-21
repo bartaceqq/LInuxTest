@@ -4,7 +4,7 @@ Praktická zkouška v izolované KVM virtuálce: **65 minut, 26 automatických k
 
 ## Instalace na server
 
-Na serveru musí být Linux se systemd, architektura x86_64 a dostupné KVM. Doporučeno je alespoň **4 GiB RAM a 25 GiB volného místa**. Pokud chybí `git`, nejprve jej nainstaluj balíčkovým správcem serveru.
+Na serveru musí být Linux se systemd, architektura x86_64 a dostupné KVM. Doporučeno je alespoň **4 GiB RAM a 25 GiB volného místa**. Pokud chybí `git`, nejprve spusť `sudo apt-get update` a `sudo apt-get install -y git`.
 
 ```bash
 git clone https://github.com/bartaceqq/LInuxTest.git
@@ -82,7 +82,7 @@ python3 tests/validators-regression.py
 
 Použij Python 3.10–3.12; vlastní hodnotič běží na Pythonu z Ubuntu 22.04 uvnitř VM. CI kontroluje Python, Bash, C pomocník, tyto regrese a balení instalátoru. CI bez KVM neověřuje boot celé VM. Reálné integrační testy patří do samostatné QA instance; hlavní pokus testovací skripty odmítají změnit. [Postup testování](docs/TESTOVANI.md).
 
-Ověřena byla také kompletní instalace na čistém **Debianu 12 s KVM**, včetně stažení a ověření Ubuntu, skutečné konzole, nulového počátečního skóre a opakování instalátoru bez ztráty dat. Ostatní uvedené distribuce jsou cílové platformy; samostatný úplný test každé z nich se netvrdí. [Výsledky ověření](docs/OVERENI.md).
+Ověřena byla také kompletní instalace na čistém **Debianu 12 s KVM**, včetně stažení a ověření Ubuntu, skutečné konzole, opakování instalátoru bez ztráty dat a celého automaticky ohodnoceného pokusu na 34/34. Prošlo také všech 53 integračních kontrol, 22 kontrol rozhraní a reset obou pomocných disků. Ostatní uvedené distribuce jsou cílové platformy; samostatný úplný test každé z nich se netvrdí. [Výsledky ověření](docs/OVERENI.md).
 
 Log hodnotiče uvnitř VM:
 
