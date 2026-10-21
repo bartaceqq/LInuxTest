@@ -1,0 +1,17 @@
+# Runtime images, generated cloud-init, reports and exam data stay on the host.
+/build/
+/downloads/
+/reports/
+__pycache__/
+*.py[cod]
+*.qcow2
+*.img
+*.iso
+*.log
+*.deb
+*.tar
+*.tar.gz
+.env
+.env.*
+*.pem
+*.key

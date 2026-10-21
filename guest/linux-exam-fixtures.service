@@ -1,0 +1,10 @@
+[Unit]
+Description=Cvičné procesy Linux Essentials (bez restartování)
+After=local-fs.target
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/linux-exam/boot.py
+RemainAfterExit=yes
+TimeoutStopSec=2
+[Install]
+WantedBy=multi-user.target

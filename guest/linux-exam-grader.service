@@ -1,0 +1,16 @@
+[Unit]
+Description=Automatické hodnocení Linux Essentials
+After=linux-exam-fixtures.service
+Requires=linux-exam-fixtures.service
+ConditionPathExists=/var/lib/linux-exam/started
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /opt/linux-exam/grader.py monitor
+Restart=on-failure
+RestartSec=2
+UMask=0022
+Nice=10
+ProtectSystem=full
+PrivateTmp=no
+[Install]
+WantedBy=multi-user.target

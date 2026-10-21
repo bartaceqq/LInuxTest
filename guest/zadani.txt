@@ -1,0 +1,85 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                LINUX ESSENTIALS PRAKTIKUM
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Po každém splněném úkolu se automaticky objeví systémová hláška
+v samostatném panelu jako barevný přehled statstest.
+Žlutá = skóre a chybějící úkoly. Zelená = splněné úkoly.
+Přehled můžeš kdykoliv vypsat příkazem statstest.
+Zkoušku zahájíš nebo znovu připojíš příkazem starttest.
+Pokud je potřeba oprávnění roota, použij sudo.
+CELKEM NA ZAČÁTKU: 0 / 34       ČASOVÝ LIMIT: 65 minut
+Body se udělují jednou a zůstávají přidělené. Čas běží i po odpojení.
+25 zadání, 26 samostatných kontrol (25a a 25b), celkem 34 bodů.
+
+A — INSTALACE SOFTWARE (2 body)
+1. Nainstaluj Midnight Commander (balíček mc). [1 bod]
+2. Odinstaluj program curl. [1 bod]
+
+B — UŽIVATELÉ (4 body)
+3. Vytvoř uživatelku aneta s domovem /home/aneta. [1 bod]
+4. Nastav uživatelce aneta heslo xy5631786. [1 bod]
+5. Odstraň uživatele lubos včetně jeho domovského adresáře. [1 bod]
+6. Vytvoř skupinu spravci. [1 bod]
+
+C — SOUBORY A ADRESÁŘE (8 bodů)
+7. Zkopíruj /var/www/html/index.nginx-debian.html do
+   /var/www/html/index.nginx-debian.html.bak se stejným obsahem. [1 bod]
+8. Vytvoř /var/zalohy-nginx a rekurzivně do něj zkopíruj celý
+   /var/log/nginx. Výsledek: /var/zalohy-nginx/nginx/ včetně obsahu. [2 body]
+9. Zapiš aktuální datum z programu date do /tmp/datum.txt. [1 bod]
+10. Přejmenuj /home/jan/hesla.doc na /home/jan/hesla.doc.bak.
+    Zachovej původní obsah; původní jméno musí zmizet. [1 bod]
+11. Vytvoř běžný textový soubor /home/pepa/adam_bartak.txt. [2 body]
+12. Odstraň /home/karel/zaloha včetně veškerého obsahu. [1 bod]
+
+D — OPRÁVNĚNÍ (9 bodů)
+13. Nastav vlastníka a skupinu /var/tajny na nobody:nogroup. [1 bod]
+14. Vytvoř /var/mojedata. Vstup do něj povol vlastníkovi a skupině,
+    ostatním vstup zakaž. [1 bod]
+15. Vytvoř /var/uloziste, jehož vlastníkem je uživatel jouda. [1 bod]
+16. Nastav domovský adresář webapp tak, aby do něj mohl vstoupit
+    pouze uživatel webapp; skupina ani ostatní nesmějí vstoupit. [3 body]
+17. Nastav domovský adresář webapp2: webapp2 může vstoupit i zapisovat,
+    členové apps mohou vstoupit, ale nesmějí zapisovat.
+    Všichni ostatní musí mít přístup zakázán. [3 body]
+
+E — PROCESY (3 body)
+18. Ukonči běžící proces nginx. [1 bod]
+19. Ukonči odolný proces apache. Na běžný požadavek k ukončení
+    nereaguje; zvol odpovídající silnější signál. [2 body]
+
+F — ARCHIVACE (3 body)
+20. Vytvoř nekomprimovanou platnou tar zálohu celého /etc do
+    /home/aneta/zaloha-etc.tar. Zachovej hierarchii etc/. [1 bod]
+21. Jako uživatelka aneta vytvoř gzip komprimovaný tar archiv
+    /home/aneta do /home/aneta/zaloha.tar.gz. Musí obsahovat skutečné
+    soubory domova a patřit anetě. Cílový archiv nemusí obsahovat sám sebe.
+    Při práci ošetři vyloučení vznikajícího archivu. [2 body]
+
+G — KOMPILACE (1 bod)
+22. Zkompiluj připravený skutečný projekt v /opt/nyancat.
+    Výsledek musí být spustitelný binární soubor
+    /opt/nyancat/src/nyancat. Vyzkoušej jeho spuštění. [1 bod]
+
+H — PŘIPOJOVÁNÍ DISKŮ (2 body)
+23. Připoj skutečný cvičný oddíl /dev/sda1 do /mnt/disk.
+    Je-li třeba, vytvoř přípojný bod. [1 bod]
+24. Odpoj souborový systém připojený do /mnt/flashka. [1 bod]
+
+I — SÍŤOVÁNÍ (2 body)
+25a. Přidej IPv4 adresu 192.168.99.5/24 na rozhraní eth1. [1 bod]
+25b. Přidej do /etc/hosts mapování 127.0.0.1 jecnavecna.cz.
+     Název se musí překládat právě na 127.0.0.1.
+     Zachovej důležité stávající záznamy. [1 bod]
+
+OVLÁDÁNÍ
+Příkazy piš do panelu TERMINÁL. statstest ukáže body a úkoly.
+Ctrl+b, pusť klávesy, pak číslo: 1 terminál, 2 úkoly, 3 zadání,
+4 pomoc, 5 výsledek. Z tohoto zadání se vrať q, Enter nebo Esc.
+Zadání otevřeš znovu příkazem zadanitest; pomoc zobrazí pomoc-test.
+F1–F4 jsou volitelné zkratky v shellu a přehledech. V nano/mc patří programu.
+Ctrl+b, pak z zvětší aktivní panel; Ctrl+b, pak d odpojí rozhraní.
+Ctrl+] opustí konzoli. Znovu na hostiteli linux-exam con a ve VM starttest.
+Běžný exit ukončí vnořený su shell; zavřený studentův shell se obnoví.
+Progres zůstává uložený a čas dál běží. Pouze linux-exam reset na hostiteli
+po potvrzení RESET zahodí pokus a připraví nový.

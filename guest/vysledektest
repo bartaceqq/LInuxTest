@@ -1,0 +1,4 @@
+#!/bin/bash
+set -euo pipefail
+if [[ -n ${TMUX:-} ]]; then exec python3 /opt/linux-exam/session.py go result; fi
+exec python3 /opt/linux-exam/ui.py result-text

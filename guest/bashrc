@@ -1,0 +1,19 @@
+[[ -r ~/.bashrc ]] && source ~/.bashrc
+export LANG=cs_CZ.UTF-8
+export TERM=tmux-256color
+stty -ixon -ixoff 2>/dev/null || true
+PS1='\[\e[32m\]\u@\h\[\e[0m\]:\w\$ '
+# Jen Bash: v nano/mc se F klávesy nemění ani nezachytávají tmuxem.
+_exam_help() { python3 /opt/linux-exam/session.py go help; }
+_exam_shell() { python3 /opt/linux-exam/session.py go shell; }
+_exam_tasks() { python3 /opt/linux-exam/session.py go tasks; }
+_exam_assignment() { python3 /opt/linux-exam/session.py go assignment; }
+bind -x '"\eOP":_exam_help'
+bind -x '"\eOQ":_exam_shell'
+bind -x '"\eOR":_exam_tasks'
+bind -x '"\eOS":_exam_assignment'
+bind -x '"\e[11~":_exam_help'
+bind -x '"\e[12~":_exam_shell'
+bind -x '"\e[13~":_exam_tasks'
+bind -x '"\e[14~":_exam_assignment'
+printf '\033[36mZde piš příkazy. statstest = body | zadanitest = zadání | pomoc-test = pomoc\033[0m\n'

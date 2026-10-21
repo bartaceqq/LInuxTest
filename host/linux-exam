@@ -1,0 +1,49 @@
+#!/bin/bash
+set -euo pipefail
+export LC_ALL=C
+P=/opt/linux-exam-simulator
+instance=${LINUX_EXAM_INSTANCE:-main}
+case "$instance" in main) VM=linux-essentials-exam;; qa) VM=linux-essentials-exam-qa;; *) echo 'Neplatná instance.' >&2; exit 2;; esac
+v() { virsh -c qemu:///system "$@" </dev/null; }
+# Nepřidáváme hostitelské účty do skupin a neměníme sudoers.
+# Běžný uživatel bez přístupu k libvirt použije stávající oprávnění sudo.
+case "${1:-help}" in
+ con|start|stop|status)
+    if [[ $EUID != 0 ]] && ! virsh -c qemu:///system uri </dev/null >/dev/null 2>&1; then
+       command -v sudo >/dev/null || { echo 'Přístup k libvirt vyžaduje existující sudo oprávnění.' >&2; exit 1; }
+       echo 'Přístup k libvirt vyžaduje sudo; může být vyžádáno heslo hostitele.' >&2
+       exec sudo env LINUX_EXAM_INSTANCE="$instance" /bin/bash "$P/host/linux-exam" "$@"
+    fi ;;
+esac
+case "${1:-help}" in
+ con) exec python3 "$P/host/console.py" ;;
+ start) exec python3 "$P/host/console.py" start ;;
+ stop) exec python3 "$P/host/console.py" stop ;;
+ status)
+    printf 'Cvičný VM: %s\nStav: ' "$VM"; v domstate "$VM"
+    if [[ $(v domstate "$VM") == running ]]; then
+       python3 "$P/host/guest.py" 'python3 /opt/linux-exam/ui.py status' --timeout 10 || echo 'Guest Agent zatím neodpovídá; VM může startovat.'
+    fi ;;
+ reset)
+    printf 'Reset zahodí všechny změny a postup pouze ve VM %s.\n' "$VM"
+    read -r -p 'Pro nový čistý pokus napiš RESET: ' answer
+    [[ "$answer" == RESET ]] || { echo 'Reset zrušen, pokus je zachovaný.'; exit 1; }
+    if [[ $EUID == 0 ]]; then exec python3 "$P/host/reset.py" --confirmed; fi
+    exec sudo env LINUX_EXAM_INSTANCE="$instance" python3 "$P/host/reset.py" --confirmed ;;
+ help|-h|--help)
+    cat <<'TXT'
+Linux Essentials — skutečná cvičná VM
+linux-exam con     Připojit nebo znovu převzít konzoli; pokus se zachová.
+linux-exam status  Skóre, čas a stav.
+linux-exam reset   Po potvrzení RESET nový čistý pokus.
+linux-exam start   Spustit VM.
+linux-exam stop    Bezpečně vypnout VM (běžící čas se tím nezastaví).
+
+Uvnitř VM: starttest | statstest | zadanitest | pomoc-test.
+Přepínání: Ctrl+b, obě klávesy pusť, potom 1 = příkazy, 3 = zadání.
+Ze zadání a přehledů se vrátíš q / Enter / Esc.
+Odpojení konzole: Ctrl+]. Opětovné con bezpečně převezme staré připojení.
+TXT
+    ;;
+ *) echo 'Neznámý příkaz. Použij linux-exam help.' >&2; exit 2 ;;
+esac
