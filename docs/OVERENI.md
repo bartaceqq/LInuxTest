@@ -20,7 +20,7 @@ Ověřeno 21. října 2026. Výsledky níže pocházejí ze spuštěných testů
 | 5 regresí auditu původních prostředků | PASS |
 | Syntaxe Python, Bash, C a workflow GitHub Actions | PASS |
 
-Přijímací běh na čistém Debianu obsahoval 16 úspěšných kontrol. Následovalo 22 kontrol skutečné sériové konzole a tmux, 53 integračních kontrol skutečných Linuxových operací a samostatný test obnovy obou pomocných disků. Po všech testech zůstal testovací pokus čistý na 0/34 bez spuštěného času. Po zrychlení přepínání bylo v deseti přechodech na vnořeném KVM naměřeno 0,254 s medián a 0,459 s maximum; čas i skóre zůstaly stejné. Jde o naměřené hodnoty testovacího prostředí, nikoli zaručenou odezvu na každém počítači. Nový hostitel byl samostatný virtuální stroj s vlastními disky, odchozím NAT a zpřístupněným KVM. Při testování se nepoužíval uživatelův existující pokus.
+Přijímací běh na čistém Debianu obsahoval 15 úspěšných kontrol. Následovalo 22 kontrol skutečné sériové konzole a tmux, 53 integračních kontrol skutečných Linuxových operací a samostatný test obnovy obou pomocných disků. Po všech testech zůstal testovací pokus čistý na 0/34 bez spuštěného času. Po zrychlení přepínání bylo v deseti přechodech na vnořeném KVM naměřeno 0,254 s medián a 0,459 s maximum; čas i skóre zůstaly stejné. Jde o naměřené hodnoty testovacího prostředí, nikoli zaručenou odezvu na každém počítači. Nový hostitel byl samostatný virtuální stroj s vlastními disky, odchozím NAT a zpřístupněným KVM. Při testování se nepoužíval uživatelův existující pokus.
 
 Debian 13, další verze Ubuntu a jejich deriváty jsou cílové platformy instalátoru. Tento záznam netvrdí, že na každé z nich proběhla samostatná kompletní instalace.
 
